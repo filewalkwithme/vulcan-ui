@@ -26,7 +26,10 @@ $(document).ready(async () => {
     loadData(client);
 })
 
-function init() {
+async function init() {
+    // get configs
+    const cfg = await common.config();
+
     rootElement = $(document.body);
     // Attach events.
     $("#teamsList").on('change', function () {
@@ -35,6 +38,18 @@ function init() {
     $('.editAssetsLink').on('click', function () {
         window.open(`assets/edit-assets.html?team_id=${selectedTeam}`);
     })
+    $('.createTeamLink').hide();
+    $('.editTeamLink').hide();
+    if (cfg.teams_crud===true) {
+        $('.createTeamLink').show();
+        $('.editTeamLink').show();
+        $('.createTeamLink').on('click', function () {
+            window.open(`teams/teams.html`);
+        })
+        $('.editTeamLink').on('click', function () {
+            window.open(`teams/teams.html?team_id=${selectedTeam}`);
+        })
+    }
     $('.manageMembersLink').on('click', function () {
         window.open(`manage-members.html?team_id=${selectedTeam}`);
     })
