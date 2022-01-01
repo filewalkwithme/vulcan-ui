@@ -12,21 +12,22 @@ let rootElement;
 let selectedTeam;
 
 $(document).ready(async () => {
-    init();
-    // Load config.
-    try {
+    await init();
 
-        config = await common.config()
-    } catch (err) {
-        handleError(err);
-        return;
-    }
     // Create vulcan-api client and load data.
     const client = new api.vulcanAPI(config.api_url, () => api.token(config.ask_credentials));
     loadData(client);
 })
 
-function init() {
+async function init() {
+    // Load config.
+    try {
+        config = await common.config()
+    } catch (err) {
+        handleError(err);
+        return;
+    }
+
     rootElement = $(document.body);
     // Attach events.
     $("#teamsList").on('change', function () {
@@ -50,9 +51,15 @@ function init() {
     $('.liveReportLink').on('click', function () {
         window.open(`report/report.html?team_id=${selectedTeam}`);
     });
-    $('.apiTokenLink').on('click', function () {
-        window.open(`api/v1/home`);
-    });
+    if (config.token_page_url !== undefined) {
+        $('.apiTokenLink').on('click', function () {
+            window.open(config.token_page_url);
+        });
+    } else {
+        $('.apiTokenLink').on('click', function () {
+            window.open(`api/v1/home`);
+        });
+    }
 }
 
 function onSelectedTeamChanged() {
